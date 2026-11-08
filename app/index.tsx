@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { Link } from 'expo-router'; // Добавлен импорт Link
+import { router } from 'expo-router';
 
-export default function App() {
+export default function HomeScreen() {
   const [likes, setLikes] = useState(0);
 
   return (
@@ -13,35 +15,41 @@ export default function App() {
       <Pressable onPress={() => setLikes(likes + 1)} style={styles.button}>
         <Text style={styles.buttonText}>Like</Text>
       </Pressable>
+
+      {/* Переместили Link внутрь View, сразу под кнопку Like */}
+      <Link href="/events" asChild>
+        <Pressable style={{ marginTop: 20, padding: 10, backgroundColor: '#ddd' }}>
+          <Text>Events</Text>
+        </Pressable>
+      </Link>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
   heading: {
-    fontSize: 32,
-  },
-  likesText: {
-    fontSize: 20,
-    marginTop: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
+  likesText: {
+    fontSize: 18,
+    marginVertical: 10,
+  },
   button: {
-    minHeight: 44,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#007BFF',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
-    justifyContent: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 18,
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
