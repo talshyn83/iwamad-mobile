@@ -1,30 +1,30 @@
 [
   {
     "id": 1,
-    "title": "AI & Data Science Meetup",
+    "title": "Music Festival",
     "date": "2026-11-15",
-    "location": "KBTU Hall 204",
-    "description": "Discussion on modern ML pipelines and practical case studies."
+    "place": "City Arena",
+    "seats": 12000
   },
   {
     "id": 2,
-    "title": "Frontend Hackathon",
-    "date": "2026-11-18",
-    "location": "Coworking Space",
-    "description": "Build a mobile-first UI in 4 hours."
+    "title": "Tech Conference",
+    "date": "2026-11-20",
+    "place": "University Hall",
+    "seats": 300
   },
   {
     "id": 3,
-    "title": "Cybersecurity Workshop",
-    "date": "2026-11-21",
-    "location": "Lab 305",
-    "description": "Hands-on network defense and packet analysis."
+    "title": "Food Market",
+    "date": "2026-11-25",
+    "place": "Central Park",
+    "seats": 5000
   },
   {
     "id": 4,
-    "title": "Tech Career Fair",
-    "date": "2026-11-25",
-    "location": "Main Atrium",
-    "description": "Meet recruiters and engineering teams."
+    "title": "Art Exhibition",
+    "date": "2026-11-30",
+    "place": "Local Museum",
+    "seats": 150
   }
 ]
