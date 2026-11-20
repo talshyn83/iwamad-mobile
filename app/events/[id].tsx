@@ -1,23 +1,16 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { HolidayNote } from '../../src/components/HolidayNote';
 import { useEvents } from '../../src/hooks/useEvents';
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data, isPending, isError, error, refetch } = useEvents();
+  const { data: events, isPending, isError } = useEvents();
 
   if (isPending) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" />
-        <Text style={styles.statusText}>Loading events</Text>
+        <Text style={styles.muted}>Loading event...</Text>
       </View>
     );
   }
@@ -25,32 +18,48 @@ export default function EventDetailScreen() {
   if (isError) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorTitle}>Could not load events</Text>
-        <Text style={styles.errorMessage}>{error.message}</Text>
-        <Pressable style={styles.retryButton} onPress={() => refetch()}>
-          <Text style={styles.retryText}>Try again</Text>
+        <Text style={styles.errorTitle}>Could not load event</Text>
+        <Pressable onPress={() => router.back()} style={styles.button}>
+          <Text style={styles.buttonText}>Back to events</Text>
         </Pressable>
       </View>
     );
   }
 
-  const event = data?.find((e) => e.id === Number(id));
+  const event = events?.find((item) => item.id === Number(id));
 
   if (!event) {
     return (
       <View style={styles.center}>
         <Text style={styles.errorTitle}>Event not found</Text>
-        <Text style={styles.errorMessage}>No event with id {id}</Text>
+        <Text style={styles.muted}>No event with id {id}.</Text>
+        <Pressable onPress={() => router.replace('/events')} style={styles.button}>
+          <Text style={styles.buttonText}>Back to events</Text>
+        </Pressable>
       </View>
     );
   }
 
+  const extraFields = Object.entries(event).filter(
+    ([key, val]) => !['id', 'title', 'date'].includes(key) && val !== undefined && val !== ''
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.meta}>Date: {event.date}</Text>
-      <Text style={styles.meta}>Place: {event.place}</Text>
-      <Text style={styles.meta}>Seats: {event.seats}</Text>
+
+      <Text style={styles.meta}>{event.date}</Text>
+      <HolidayNote date={event.date} />
+
+      {extraFields.map(([key, val]) => (
+        <Text key={key} style={styles.description}>
+          {String(val)}
+        </Text>
+      ))}
+
+      <Pressable onPress={() => router.back()} style={styles.button}>
+        <Text style={styles.buttonText}>Back</Text>
+      </Pressable>
     </View>
   );
 }
@@ -63,46 +72,46 @@ const styles = StyleSheet.create({
   },
   center: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
-  },
-  statusText: {
-    marginTop: 12,
-    fontSize: 16,
-  },
-  errorTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  errorMessage: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  retryButton: {
-    minHeight: 44,
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-  },
-  retryText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   meta: {
+    fontSize: 15,
+    color: '#555',
+  },
+  description: {
     fontSize: 16,
-    color: '#333',
-    marginBottom: 8,
+    lineHeight: 24,
+    color: '#222',
+    marginTop: 12,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  muted: {
+    fontSize: 15,
+    color: '#666',
+  },
+  button: {
+    marginTop: 24,
+    backgroundColor: '#0a7ea4',
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15,
   },
 });

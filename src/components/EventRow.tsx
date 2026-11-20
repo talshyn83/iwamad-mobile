@@ -1,60 +1,106 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import type { CampusEvent } from '../data/events';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+  ZoomIn,
+} from 'react-native-reanimated';
+import { CampusEvent } from '../data/events';
 
 type Props = {
   event: CampusEvent;
   saved: boolean;
   onPress: () => void;
-  onLongPress: () => void;
+  onToggleSaved: () => void;
 };
 
-export function EventRow({ event, saved, onPress, onLongPress }: Props) {
+export function EventRow({ event, saved, onPress, onToggleSaved }: Props) {
+  const details = Object.entries(event)
+    .filter(([key, val]) => !['id', 'title', 'date'].includes(key) && typeof val === 'string')
+    .map(([, val]) => val)
+    .join(' · ');
+
   return (
-    <Pressable
-      onPress={onPress}
-      onLongPress={onLongPress}
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-    >
-      <View style={styles.header}>
-        <Text style={styles.title}>{event.title}</Text>
-        {saved && <Text style={styles.savedBadge}>★ Saved</Text>}
-      </View>
-      <Text style={styles.meta}>
-        {event.date} • {event.place}
-      </Text>
-    </Pressable>
+    <Animated.View entering={FadeIn} exiting={FadeOut} layout={LinearTransition}>
+      <Swipeable
+        friction={2}
+        rightThreshold={60}
+        renderRightActions={(_progress, _translation, swipeable) => (
+          <Pressable
+            onPress={() => {
+              onToggleSaved();
+              swipeable.close();
+            }}
+            style={styles.action}
+          >
+            <Text style={styles.actionText}>{saved ? 'Unsave' : 'Save'}</Text>
+          </Pressable>
+        )}
+      >
+        <Pressable
+          onPress={onPress}
+          onLongPress={onToggleSaved}
+          style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+        >
+          <View style={styles.info}>
+            <Text style={styles.title}>{event.title}</Text>
+            <Text style={styles.meta}>
+              {event.date}{details ? ` · ${details}` : ''}
+            </Text>
+          </View>
+          {saved && (
+            <Animated.Text entering={ZoomIn} style={styles.badge}>
+              ★ Saved
+            </Animated.Text>
+          )}
+        </Pressable>
+      </Swipeable>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 16,
-    borderRadius: 10,
-    backgroundColor: '#f8f9fa',
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-  },
-  cardPressed: {
-    opacity: 0.7,
-  },
-  header: {
+  row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  pressed: {
+    backgroundColor: '#f5f5f5',
+  },
+  info: {
+    flex: 1,
+    paddingRight: 8,
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
   },
-  savedBadge: {
-    color: '#f59f00',
-    fontWeight: '600',
-  },
   meta: {
-    marginTop: 4,
-    color: '#666',
     fontSize: 13,
+    color: '#666',
+    marginTop: 4,
+  },
+  badge: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#d97706',
+  },
+  action: {
+    backgroundColor: '#0a7ea4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 84,
+    minHeight: 44,
+  },
+  actionText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });

@@ -1,55 +1,52 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { Link } from 'expo-router'; // Добавлен импорт Link
 import { router } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSavedIds } from '../src/hooks/useSavedIds';
 
 export default function HomeScreen() {
-  const [likes, setLikes] = useState(0);
+  const { savedIds } = useSavedIds();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Hello, World!</Text>
-      <Text style={styles.heading}>Talshyn Saparkhan</Text>
+      <Text style={styles.title}>Campus Events</Text>
+      <Text style={styles.subtitle}>Saved events: {savedIds.length}</Text>
 
-      <Text style={styles.likesText}>Likes: {likes}</Text>
-      <Pressable onPress={() => setLikes(likes + 1)} style={styles.button}>
-        <Text style={styles.buttonText}>Like</Text>
+      <Pressable
+        onPress={() => router.push('/events')}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Browse Events</Text>
       </Pressable>
-
-      {/* Переместили Link внутрь View, сразу под кнопку Like */}
-      <Link href="/events" asChild>
-        <Pressable style={{ marginTop: 20, padding: 10, backgroundColor: '#ddd' }}>
-          <Text>Events</Text>
-        </Pressable>
-      </Link>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: 24,
+    backgroundColor: '#fff',
   },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 8,
   },
-  likesText: {
-    fontSize: 18,
-    marginVertical: 10,
+  subtitle: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 24,
   },
   button: {
-    backgroundColor: '#007BFF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    backgroundColor: '#0a7ea4',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
   },
   buttonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
